@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fef9e7 0%, #fdebd0 100%);
+            color: #1a3a52;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1a3a52;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #4a6fa5;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .intro-section {
+            background: linear-gradient(135deg, #d4e6f1 0%, #aed6f1 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+        }
+
+        .intro-section h2 {
+            color: #1a3a52;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .intro-section p {
+            margin-bottom: 10px;
+        }
+
+        .builder-section {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            color: #1a3a52;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #aed6f1;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+
+        .input-group:hover {
+            transform: translateY(-2px);
+        }
+
+        .input-group.name {
+            background: linear-gradient(135deg, #f0f3ff 0%, #e3e8ff 100%);
+            border-left: 5px solid #667eea;
+        }
+
+        .input-group.context {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+            border-left: 5px solid #f9ca24;
+        }
+
+        .input-group.role {
+            background: linear-gradient(135deg, #e8f8f5 0%, #d1f2eb 100%);
+            border-left: 5px solid #1abc9c;
+        }
+
+        .input-group.input {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e6f1 100%);
+            border-left: 5px solid #3498db;
+        }
+
+        .input-group.instruction {
+            background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%);
+            border-left: 5px solid #f39c12;
+        }
+
+        .input-group.validation {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            border-left: 5px solid #e91e63;
+        }
+
+        .input-group.output {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-left: 5px solid #9c27b0;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            color: #1a3a52;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .input-group small {
+            display: block;
+            color: #5a7ca0;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: white;
+            color: #1a3a52;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .result-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #e8f8f5 0%, #d1f2eb 100%);
+            border-radius: 15px;
+            border-left: 5px solid #1abc9c;
+        }
+
+        .result-section h3 {
+            color: #1a3a52;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        #finalPrompt {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #1abc9c;
+            min-height: 200px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .my-prompts-section {
+            background: linear-gradient(135deg, #e8f8f5 0%, #d1f2eb 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 5px solid #1abc9c;
+        }
+
+        .my-prompts-section h3 {
+            color: #1a3a52;
+            margin-bottom: 20px;
+        }
+
+        #promptsList {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .empty-message {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .saved-prompt-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #1abc9c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .saved-prompt-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .saved-prompt-info {
+            flex: 1;
+        }
+
+        .saved-prompt-title {
+            font-weight: bold;
+            color: #1a3a52;
+            margin-bottom: 5px;
+        }
+
+        .saved-prompt-date {
+            font-size: 0.85em;
+            color: #7f8c8d;
+        }
+
+        .saved-prompt-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-load {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .btn-download-small {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-small:hover {
+            transform: scale(1.05);
+        }
+
+        .tips-section {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 5px solid #f9ca24;
+        }
+
+        .tips-section h3 {
+            color: #1a3a52;
+            margin-bottom: 15px;
+        }
+
+        .tips-section ul {
+            list-style-position: inside;
+            color: #1a3a52;
+        }
+
+        .tips-section li {
+            margin-bottom: 8px;
+            padding-left: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #1abc9c;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+
+        .close-modal {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-prompt-display {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #1abc9c;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            color: #1a3a52;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid #dfe6e9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .saved-prompt-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-small {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Prompt Engineering Builder</h1>
+        <p class="subtitle">เครื่องมือสร้าง Prompt ที่มีประสิทธิภาพด้วยหลัก 6 ส่วน</p>
+
+        <div class="intro-section">
+            <h2>📚 Prompt Engineering คืออะไร?</h2>
+            <p><strong>Prompt Engineering</strong> คือศิลปะและวิทยาศาสตร์ในการเขียนคำสั่งหรือคำถามให้กับ AI เพื่อให้ได้ผลลัพธ์ที่ตรงตามความต้องการมากที่สุด การเขียน Prompt ที่ดีจะช่วยให้ AI เข้าใจบริบทและสามารถตอบสนองได้อย่างแม่นยำและเป็นประโยชน์</p>
+            <p><strong>โครงสร้างคำสั่ง (Prompt Engineering) แบ่งออกเป็น 6 ส่วนสำคัญ ดังนี้:</strong></p>
+            <p style="margin-top: 12px;"><strong>1. CONTEXT & WHY (บริบทและเหตุผล)</strong></p>
+            <p style="margin-left: 20px; margin-top: 5px;">ทำให้ AI เข้าใจภาพรวมก่อนจะเริ่มทำงาน</p>
+            <p style="margin-top: 12px;"><strong>2. ROLE (บทบาทของ AI)</strong></p>
+            <p style="margin-left: 20px; margin-top: 5px;">กำหนดบทบาทให้กับ AI เพื่อให้ผลลัพธ์ที่ออกมาดูมีความเป็นมืออาชีพ</p>
+            <p style="margin-top: 12px;"><strong>3. INPUT (ข้อมูลนำเข้า)</strong></p>
+            <p style="margin-left: 20px; margin-top: 5px;">บอกประเภทของข้อมูลหรือไฟล์ข้อมูลที่จำเป็นเพื่อให้ผลลัพธ์ตรงกับงาน</p>
+            <p style="margin-top: 12px;"><strong>4. INSTRUCTION (คำสั่งและขั้นตอนการทำงาน)</strong></p>
+            <p style="margin-left: 20px; margin-top: 5px;">กำหนดขั้นตอนการทำงานให้เป็นระบบในแบบของนักบัญชี</p>
+            <p style="margin-top: 12px;"><strong>5. VALIDATION & CHECK (การตรวจสอบ)</strong></p>
+            <p style="margin-left: 20px; margin-top: 5px;">กำหนดให้มีการตรวจสอบคำตอบด้วย AI ก่อนจะส่งออกผลลัพธ์</p>
+            <p style="margin-top: 12px;"><strong>6. OUTPUT FORMAT SUMMARY (สรุปรูปแบบผลลัพธ์)</strong></p>
+            <p style="margin-left: 20px; margin-top: 5px;">ควบคุมหน้าตาของผลลัพธ์ให้ออกมาพร้อมใช้งานทันที</p>
+        </div>
+
+        <div class="builder-section">
+            <h2 class="section-title">🛠️ สร้าง Prompt ของคุณ</h2>
+
+            <div class="input-group name">
+                <label>📝 ชื่อ Prompt</label>
+                <small>ตั้งชื่อให้กับ Prompt ของคุณ (จะใช้เป็นชื่อไฟล์เมื่อดาวน์โหลด)</small>
+                <input type="text" id="promptName" placeholder="ตัวอย่าง: รายงานการเงิน-Q4-2024">
+            </div>
+
+            <div class="input-group context">
+                <label>1️⃣ Context & Why (บริบทและเหตุผล)</label>
+                <small>อธิบายสถานการณ์และเหตุผลที่ต้องการใช้ Prompt นี้</small>
+                <textarea id="context" rows="3" placeholder="ตัวอย่าง: บริษัทของเราเป็น SME ที่กำลังจะปิดงบการเงินประจำปี และต้องการจัดทำรายงานการเงินเพื่อนำเสนอต่อผู้บริหารและใช้ยื่นภาษี เราต้องการความช่วยเหลือในการตรวจสอบความถูกต้องและจัดทำรายงานให้เป็นมาตรฐาน"></textarea>
+            </div>
+
+            <div class="input-group role">
+                <label>2️⃣ Role (บทบาทของ AI)</label>
+                <small>กำหนดบทบาทหรือความเชี่ยวชาญที่ต้องการให้ AI แสดง</small>
+                <textarea id="role" rows="2" placeholder="ตัวอย่าง: คุณคือผู้เชี่ยวชาญด้านการบัญชีและการเงิน มีประสบการณ์ 15 ปี เชี่ยวชาญในการจัดทำงบการเงินตามมาตรฐานการบัญชีไทย (TFRS) และการวางแผนภาษี"></textarea>
+            </div>
+
+            <div class="input-group input">
+                <label>3️⃣ Input (ข้อมูลนำเข้า)</label>
+                <small>ข้อมูลหรือเนื้อหาที่ต้องการให้ AI ใช้ในการประมวลผล</small>
+                <textarea id="input" rows="3" placeholder="ตัวอย่าง: ข้อมูลทางการเงิน: รายได้รวม 5,000,000 บาท, ต้นทุนขาย 3,000,000 บาท, ค่าใช้จ่ายดำเนินงาน 1,200,000 บาท, สินทรัพย์รวม 8,000,000 บาท, หนี้สินรวม 3,500,000 บาท, ทุน 4,500,000 บาท"></textarea>
+            </div>
+
+            <div class="input-group instruction">
+                <label>4️⃣ Instruction (คำสั่งและขั้นตอนการทำงาน)</label>
+                <small>ระบุขั้นตอนหรือวิธีการที่ต้องการให้ AI ทำงานอย่างชัดเจน</small>
+                <textarea id="instruction" rows="4" placeholder="ตัวอย่าง: 1. คำนวณกำไรขั้นต้นและกำไรสุทธิ 2. วิเคราะห์อัตราส่วนทางการเงินหลัก (Profit Margin, ROA, ROE, Current Ratio) 3. จัดทำงบแสดงฐานะการเงินและงบกำไรขาดทุนเบื้องต้น 4. ให้คำแนะนำในการปรับปรุงสถานะทางการเงิน 5. สรุปประเด็นสำคัญสำหรับการนำเสนอผู้บริหาร"></textarea>
+            </div>
+
+            <div class="input-group validation">
+                <label>5️⃣ Validation & Check (การตรวจสอบ)</label>
+                <small>กำหนดเกณฑ์หรือข้อควรระวังในการตรวจสอบคุณภาพ</small>
+                <textarea id="validation" rows="3" placeholder="ตัวอย่าง: ตรวจสอบว่าตัวเลขทั้งหมดบวกลบถูกต้อง สมการบัญชีสมดุล (สินทรัพย์ = หนี้สิน + ทุน), อัตราส่วนทางการเงินคำนวณถูกต้อง, ใช้หลักการบัญชีคู่เดี่ยวที่ถูกต้อง, รายงานต้องเป็นไปตามมาตรฐานการบัญชี"></textarea>
+            </div>
+
+            <div class="input-group output">
+                <label>6️⃣ Output Format (รูปแบบผลลัพธ์และสรุป)</label>
+                <small>กำหนดรูปแบบการนำเสนอผลลัพธ์ที่ต้องการ</small>
+                <textarea id="output" rows="3" placeholder="ตัวอย่าง: จัดทำเป็นรายงานที่มีโครงสร้างชัดเจน แบ่งเป็นหัวข้อ: 1) สรุปผลประกอบการ 2) งบการเงินเบื้องต้น 3) การวิเคราะห์อัตราส่วน 4) คำแนะนำ ใช้ตารางสำหรับแสดงตัวเลข ใช้ภาษาที่เป็นทางการแต่เข้าใจง่าย พร้อมสรุปสั้นๆ ไม่เกิน 3 ประโยค"></textarea>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <h3>✨ Prompt ที่รวมแล้ว</h3>
+            <div id="finalPrompt">Prompt ของคุณจะปรากฏที่นี่เมื่อคุณเริ่มกรอกข้อมูล...</div>
+            <div class="button-group">
+                <button class="btn-copy" onclick="copyPrompt()">📋 คัดลอก Prompt</button>
+                <button class="btn-download" onclick="downloadPrompt()">💾 ดาวน์โหลดไฟล์</button>
+                <button class="btn-share" onclick="sharePrompt()">🌐 Share Prompt</button>
+                <button class="btn-clear" onclick="clearAll()">🗑️ ล้างทั้งหมด</button>
+            </div>
+        </div>
+
+        <div class="my-prompts-section">
+            <h3>🌍 Public Prompts (Prompts ที่แชร์สาธารณะ)</h3>
+            <p style="color: #7f8c8d; font-size: 0.9em; margin-bottom: 15px;">Prompts เหล่านี้ถูกแชร์โดยผู้ใช้งานทั้งหมด ทุกคนสามารถดูและดาวน์โหลดได้</p>
+            <div id="promptsList">
+                <p class="empty-message">ยังไม่มี Prompt ที่แชร์สาธารณะ</p>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h3>💡 เคล็ดลับการเขียน Prompt ที่ดี</h3>
+            <ul>
+                <li><strong>ชัดเจนและเฉพาะเจาะจง:</strong> ยิ่งระบุรายละเอียดมาก ผลลัพธ์จะยิ่งตรงความต้องการ</li>
+                <li><strong>ให้บริบทที่เพียงพอ:</strong> AI ต้องเข้าใจสถานการณ์เพื่อให้คำตอบที่เหมาะสม</li>
+                <li><strong>กำหนดบทบาทที่ชัดเจน:</strong> การให้ AI มี "บุคลิก" จะช่วยให้ได้ผลลัพธ์ที่สอดคล้อง</li>
+                <li><strong>แบ่งเป็นขั้นตอน:</strong> คำสั่งที่ซับซ้อนควรแบ่งเป็นขั้นตอนย่อยๆ</li>
+                <li><strong>ทดสอบและปรับปรุง:</strong> ลองใช้และปรับแก้ Prompt จนได้ผลลัพธ์ที่ดีที่สุด</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">คัดลอกสำเร็จ! ✓</div>
+
+    <!-- Modal สำหรับดู Prompt -->
+    <div id="promptModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">📄 Prompt</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalPromptContent" class="modal-prompt-display"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-copy" onclick="copyModalPrompt()">📋 คัดลอก Prompt</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updatePrompt() {
+            const context = document.getElementById('context').value;
+            const role = document.getElementById('role').value;
+            const input = document.getElementById('input').value;
+            const instruction = document.getElementById('instruction').value;
+            const validation = document.getElementById('validation').value;
+            const output = document.getElementById('output').value;
+
+            let prompt = '';
+
+            if (context) prompt += `1. Context & Why บริบทและเหตุผล\n${context}\n\n`;
+            if (role) prompt += `2. Role บทบาทของ AI\n${role}\n\n`;
+            if (input) prompt += `3. Input ข้อมูลนำเข้า\n${input}\n\n`;
+            if (instruction) prompt += `4. Instruction คำสั่งและขั้นตอนการทำงาน\n${instruction}\n\n`;
+            if (validation) prompt += `5. Validation & Check การตรวจสอบ\n${validation}\n\n`;
+            if (output) prompt += `6. Output Format Summary สรุปและผลลัพธ์\n${output}`;
+
+            if (prompt === '') {
+                prompt = 'Prompt ของคุณจะปรากฏที่นี่เมื่อคุณเริ่มกรอกข้อมูล...';
+            }
+
+            document.getElementById('finalPrompt').textContent = prompt;
+        }
+
+        // เพิ่ม event listeners สำหรับทุก textarea
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', updatePrompt);
+        });
+
+        function copyPrompt() {
+            const promptText = document.getElementById('finalPrompt').textContent;
+            
+            if (promptText === 'Prompt ของคุณจะปรากฏที่นี่เมื่อคุณเริ่มกรอกข้อมูล...') {
+                showNotification('กรุณากรอกข้อมูลก่อนคัดลอก', false);
+                return;
+            }
+
+            navigator.clipboard.writeText(promptText).then(() => {
+                showNotification('คัดลอกสำเร็จ! ✓');
+            }).catch(() => {
+                showNotification('เกิดข้อผิดพลาดในการคัดลอก', false);
+            });
+        }
+
+        function downloadPrompt() {
+            const promptText = document.getElementById('finalPrompt').textContent;
+            
+            if (promptText === 'Prompt ของคุณจะปรากฏที่นี่เมื่อคุณเริ่มกรอกข้อมูล...') {
+                showNotification('กรุณากรอกข้อมูลก่อนดาวน์โหลด', false);
+                return;
+            }
+
+            let fileName = document.getElementById('promptName').value.trim();
+            if (!fileName) {
+                fileName = 'my-prompt';
+            }
+            fileName = fileName.replace(/[<>:"/\\|?*]/g, '-');
+            
+            const blob = new Blob([promptText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('ดาวน์โหลดสำเร็จ! ✓');
+        }
+
+        function clearAll() {
+            if (confirm('⚠️ คุณแน่ใจหรือไม่ที่จะล้างข้อมูลทั้งหมด?\n\nข้อมูลทั้งหมดในทุกกล่องจะถูกลบและไม่สามารถกู้คืนได้')) {
+                document.getElementById('promptName').value = '';
+                document.getElementById('context').value = '';
+                document.getElementById('role').value = '';
+                document.getElementById('input').value = '';
+                document.getElementById('instruction').value = '';
+                document.getElementById('validation').value = '';
+                document.getElementById('output').value = '';
+                document.getElementById('finalPrompt').textContent = 'Prompt ของคุณจะปรากฏที่นี่เมื่อคุณเริ่มกรอกข้อมูล...';
+                showNotification('ล้างข้อมูลสำเร็จ! ✓');
+            }
+        }
+
+        function showNotification(message, success = true) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.background = success ? '#1abc9c' : '#e74c3c';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // ===== Share Prompt Functions =====
+        const STORAGE_KEY = 'sharedPrompts';
+
+        function getSharedPrompts() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveSharedPrompts(prompts) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(prompts));
+        }
+
+        function sharePrompt() {
+            const promptName = document.getElementById('promptName').value.trim();
+            const context = document.getElementById('context').value;
+            const role = document.getElementById('role').value;
+            const input = document.getElementById('input').value;
+            const instruction = document.getElementById('instruction').value;
+            const validation = document.getElementById('validation').value;
+            const output = document.getElementById('output').value;
+
+            if (!context && !role && !input && !instruction && !validation && !output) {
+                showNotification('กรุณากรอกข้อมูลก่อนแชร์', false);
+                return;
+            }
+
+            const password = prompt('🔒 กรุณาตั้งรหัสผ่านสำหรับการลบหรือแก้ไข Prompt นี้:\n(กรุณาจดจำรหัสผ่านนี้ไว้)');
+            
+            if (!password) {
+                showNotification('ยกเลิกการแชร์ - ต้องตั้งรหัสผ่าน', false);
+                return;
+            }
+
+            if (password.length < 4) {
+                showNotification('รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', false);
+                return;
+            }
+
+            const hashedPassword = btoa(password);
+
+            const promptData = {
+                id: Date.now(),
+                name: promptName || 'Prompt ที่แชร์',
+                context,
+                role,
+                input,
+                instruction,
+                validation,
+                output,
+                password: hashedPassword,
+                timestamp: Date.now(),
+                date: new Date().toLocaleString('th-TH')
+            };
+
+            const sharedPrompts = getSharedPrompts();
+            sharedPrompts.unshift(promptData);
+            saveSharedPrompts(sharedPrompts);
+            
+            showNotification('✅ แชร์ Prompt สำเร็จ! ทุกคนสามารถเห็นได้แล้ว', true);
+            loadSharedPrompts();
+        }
+
+        function loadSharedPrompts() {
+            const sharedPrompts = getSharedPrompts();
+            const promptsList = document.getElementById('promptsList');
+
+            if (sharedPrompts.length === 0) {
+                promptsList.innerHTML = '<p class="empty-message">ยังไม่มี Prompt ที่แชร์สาธารณะ</p>';
+                return;
+            }
+            
+            promptsList.innerHTML = '';
+
+            for (const promptData of sharedPrompts) {
+                const promptItem = createPublicPromptItem(promptData);
+                promptsList.appendChild(promptItem);
+            }
+        }
+
+        function createPublicPromptItem(data) {
+            const div = document.createElement('div');
+            div.className = 'saved-prompt-item';
+
+            const displayName = data.name || 'Prompt ที่แชร์';
+
+            div.innerHTML = `
+                <div class="saved-prompt-info">
+                    <div class="saved-prompt-title">🌐 ${displayName}</div>
+                    <div class="saved-prompt-date">แชร์เมื่อ: ${data.date}</div>
+                </div>
+                <div class="saved-prompt-actions">
+                    <button class="btn-small btn-load" onclick="viewPrompt(${data.id})">👁️ ดู</button>
+                    <button class="btn-small btn-download-small" onclick="downloadSharedPrompt(${data.id})">⬇️ ดาวน์โหลด</button>
+                    <button class="btn-small btn-delete" onclick="deleteSharedPrompt(${data.id})">🗑️ ลบ</button>
+                </div>
+            `;
+
+            return div;
+        }
+
+        function viewPrompt(id) {
+            const sharedPrompts = getSharedPrompts();
+            const promptData = sharedPrompts.find(p => p.id === id);
+            if (!promptData) {
+                showNotification('ไม่พบ Prompt นี้', false);
+                return;
+            }
+            
+            let promptText = '';
+            if (promptData.context) promptText += `1. Context & Why บริบทและเหตุผล\n${promptData.context}\n\n`;
+            if (promptData.role) promptText += `2. Role บทบาทของ AI\n${promptData.role}\n\n`;
+            if (promptData.input) promptText += `3. Input ข้อมูลนำเข้า\n${promptData.input}\n\n`;
+            if (promptData.instruction) promptText += `4. Instruction คำสั่งและขั้นตอนการทำงาน\n${promptData.instruction}\n\n`;
+            if (promptData.validation) promptText += `5. Validation & Check การตรวจสอบ\n${promptData.validation}\n\n`;
+            if (promptData.output) promptText += `6. Output Format Summary สรุปและผลลัพธ์\n${promptData.output}`;
+
+            document.getElementById('modalTitle').textContent = `📄 ${promptData.name}`;
+            document.getElementById('modalPromptContent').textContent = promptText;
+            document.getElementById('promptModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('promptModal').style.display = 'none';
+        }
+
+        function copyModalPrompt() {
+            const promptText = document.getElementById('modalPromptContent').textContent;
+            
+            navigator.clipboard.writeText(promptText).then(() => {
+                showNotification('คัดลอก Prompt สำเร็จ! ✓');
+            }).catch(() => {
+                showNotification('เกิดข้อผิดพลาดในการคัดลอก', false);
+            });
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('promptModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        function downloadSharedPrompt(id) {
+            const sharedPrompts = getSharedPrompts();
+            const promptData = sharedPrompts.find(p => p.id === id);
+            if (!promptData) {
+                showNotification('ไม่พบ Prompt นี้', false);
+                return;
+            }
+            
+            let promptText = '';
+            if (promptData.context) promptText += `1. Context & Why บริบทและเหตุผล\n${promptData.context}\n\n`;
+            if (promptData.role) promptText += `2. Role บทบาทของ AI\n${promptData.role}\n\n`;
+            if (promptData.input) promptText += `3. Input ข้อมูลนำเข้า\n${promptData.input}\n\n`;
+            if (promptData.instruction) promptText += `4. Instruction คำสั่งและขั้นตอนการทำงาน\n${promptData.instruction}\n\n`;
+            if (promptData.validation) promptText += `5. Validation & Check การตรวจสอบ\n${promptData.validation}\n\n`;
+            if (promptData.output) promptText += `6. Output Format Summary สรุปและผลลัพธ์\n${promptData.output}`;
+
+            let fileName = promptData.name || 'shared-prompt';
+            fileName = fileName.replace(/[<>:"/\\|?*]/g, '-');
+            
+            const blob = new Blob([promptText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('ดาวน์โหลดสำเร็จ! ✓');
+        }
+
+        function deleteSharedPrompt(id) {
+            const sharedPrompts = getSharedPrompts();
+            const promptData = sharedPrompts.find(p => p.id === id);
+            if (!promptData) {
+                showNotification('ไม่พบ Prompt นี้', false);
+                return;
+            }
+
+            const password = prompt('🔒 กรุณาใส่รหัสผ่านเพื่อลบ Prompt นี้:');
+            
+            if (!password) {
+                return;
+            }
+
+            const hashedPassword = btoa(password);
+            
+            if (hashedPassword !== promptData.password) {
+                showNotification('❌ รหัสผ่านไม่ถูกต้อง', false);
+                return;
+            }
+
+            if (confirm('⚠️ คุณแน่ใจหรือไม่ที่จะลบ Prompt นี้?\n\nการลบจะไม่สามารถกู้คืนได้')) {
+                const updatedPrompts = sharedPrompts.filter(p => p.id !== id);
+                saveSharedPrompts(updatedPrompts);
+                showNotification('ลบ Prompt สำเร็จ! ✓');
+                loadSharedPrompts();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSharedPrompts();
+        });
+    </script>
+</body>
+</html>
